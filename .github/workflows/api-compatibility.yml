@@ -12,6 +12,9 @@ on:
     branches:
       - main
 
+env:
+  GITHUB_HEAD_REF: ${{ github.head_ref }}
+
 jobs:
   Check-Compatibility:
     runs-on: macos-latest
@@ -36,7 +39,7 @@ jobs:
       # Generate apidiff states of Main
       - name: Generate-States
         run: |
-          cd ${{ github.base_ref }}
+          cd $GITHUB_HEAD_REF
           make apidiff-build
           
       # Compare apidiff states of Main with PR
@@ -45,7 +48,7 @@ jobs:
           CI: true
           COMPARE_OPTS: -d "../${{ github.base_ref }}/internal/data/apidiff"
         run: |
-          cd ${{ github.head_ref }}
+          cd $GITHUB_HEAD_REF
           make apidiff-compare
       
       # Fail GitHub Action if there are incompatible changes
@@ -54,5 +57,5 @@ jobs:
           CI: true
           COMPARE_OPTS: -d "../${{ github.base_ref }}/internal/data/apidiff" -c
         run: |
-          cd ${{ github.head_ref }}
+          cd $GITHUB_HEAD_REF
           make apidiff-compare
